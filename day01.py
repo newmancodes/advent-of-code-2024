@@ -1,8 +1,7 @@
-import unittest
-
-class Day01PuzzleTests(unittest.TestCase):
-    def test_upper(self):
-        self.assertEqual('foo'.upper(), 'FOO')
+class Day01Puzzle():
+    def greeting(self) -> str:
+        return "hello"
 
 if __name__ == "__main__":
-    unittest.main()
+    puzzle = Day01Puzzle()
+    print(puzzle.greeting())
