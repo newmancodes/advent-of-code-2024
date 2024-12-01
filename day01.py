@@ -11,6 +11,20 @@ class ListComparer:
 
         return total_distance
 
+    def calculate_similarity(x: list[int], y: list[int]) -> int:
+        y_occurance_counts = {}
+        for y_item in y:
+            seen_so_far = y_occurance_counts.get(y_item, 0)
+            seen_so_far += 1
+            y_occurance_counts.update({y_item: seen_so_far})
+
+        similarity = 0
+
+        for x_item in x:
+            similarity += x_item * y_occurance_counts.get(x_item, 0)
+
+        return similarity
+
 
 class InputParser:
     def parse_file(filename: str) -> tuple[list[int], list[int]]:
@@ -31,3 +45,6 @@ if __name__ == "__main__":
     left_list, right_list = InputParser.parse_file(first_input_filename)
     distance = ListComparer.calculate_distance(left_list, right_list)
     print(f"Distance between the lists in {first_input_filename} is {distance}")
+
+    similarity = ListComparer.calculate_similarity(left_list, right_list)
+    print(f"Similarity of the lists in {first_input_filename} is {similarity}")

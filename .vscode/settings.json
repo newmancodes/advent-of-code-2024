@@ -1,4 +1,9 @@
 {
+    "github": {
+      "copilot": {
+        "enable": false
+      }
+    },
     "[python]": {
         "editor.defaultFormatter": "ms-python.black-formatter",
         "editor.formatOnSave": true
