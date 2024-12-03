@@ -15,16 +15,25 @@ class Operation:
 
 class SectionParser:
     def parse(section: str) -> list[Operation]:
-        pattern = re.compile(r"(.*?(?P<operation>mul)\((?P<x>\d+),(?P<y>\d+)\))+?")
+        pattern = re.compile(
+            r"(.*?((?P<operation>mul)\((?P<x>\d+),(?P<y>\d+)\)|(don't\(\).*do\(\))))+?"
+        )
         position = 0
         operations = []
 
         while match := pattern.search(section, position):
             position += match.end() - match.start()
-            operation = Operation(
-                match.group("operation"), int(match.group("x")), int(match.group("y"))
-            )
-            operations.append(operation)
+            if (
+                match.group("operation") != None
+                and match.group("x") != None
+                and match.group("y") != None
+            ):
+                operation = Operation(
+                    match.group("operation"),
+                    int(match.group("x")),
+                    int(match.group("y")),
+                )
+                operations.append(operation)
 
         return operations
 
