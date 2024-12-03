@@ -16,10 +16,11 @@ class Operation:
 class SectionParser:
     def parse(section: str) -> list[Operation]:
         pattern = re.compile(
-            r"(.*?((?P<operation>mul)\((?P<x>\d+),(?P<y>\d+)\)|(don't\(\).*do\(\))))+?"
+            r"(.*?((?P<operation>mul)\((?P<x>\d+),(?P<y>\d+)\)|(?P<disable>don't\(\))|(?P<enable>do\(\))))+?"
         )
         position = 0
         operations = []
+        enabled = True
 
         while match := pattern.search(section, position):
             position += match.end() - match.start()
@@ -27,6 +28,7 @@ class SectionParser:
                 match.group("operation") != None
                 and match.group("x") != None
                 and match.group("y") != None
+                and enabled
             ):
                 operation = Operation(
                     match.group("operation"),
@@ -34,6 +36,10 @@ class SectionParser:
                     int(match.group("y")),
                 )
                 operations.append(operation)
+            elif match.group("disable") != None:
+                enabled = False
+            elif match.group("enable") != None:
+                enabled = True
 
         return operations
 
@@ -52,13 +58,13 @@ class Calculator:
 
 class InputParser:
     def parse_file(filename: str) -> list[Operation]:
-        operations = []
+        single_line = ""
 
         with open(filename) as file:
             for line in file:
-                operations = operations + SectionParser.parse(line)
+                single_line += line
 
-        return operations
+        return SectionParser.parse(single_line)
 
 
 if __name__ == "__main__":
