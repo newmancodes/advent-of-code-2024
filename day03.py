@@ -32,7 +32,7 @@ class SectionParser:
 class Calculator:
     def calculate_for_section(section: str) -> int:
         operations = SectionParser.parse(section)
-        return Calculator.calculate_for_operations(operations)
+        return Calculator.calculate(operations)
 
     def calculate(operations: list[Operation]) -> int:
         result = 0
