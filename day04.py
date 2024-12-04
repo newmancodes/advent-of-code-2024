@@ -71,5 +71,19 @@ class WordSearch:
         return found_count
 
 
+class InputParser:
+    def parse_file(filename: str) -> list[str]:
+        lines = []
+
+        with open(filename) as file:
+            for line in file:
+                lines.append(line)
+
+        return lines
+
+
 if __name__ == "__main__":
-    print("Hello, World!")
+    puzzle = InputParser.parse_file("./inputs/day04/first_input.txt")
+    wordSearch = WordSearch(puzzle)
+    match_count = wordSearch.search_for("XMAS")
+    print(f"Found {match_count} instances of XMAS")
