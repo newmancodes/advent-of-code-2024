@@ -70,6 +70,54 @@ class WordSearch:
 
         return found_count
 
+    def search_for_interlocked(self, word: str) -> int:
+        central_character = word[1]  # Assumes word length of three
+        found_count = 0
+
+        for line_index, line in enumerate(self.puzzle):
+            for char_index, char in enumerate(line):
+                if line_index == 0 or line_index == self.puzzle_height - 1:
+                    # Out of bounds (height)
+                    continue
+                elif char_index == 0 or char_index == self.puzzle_width - 1:
+                    # Out of bounds (width)
+                    continue
+                elif char == central_character:
+                    top_left = (char_index - 1, line_index - 1)
+                    top_right = (char_index + 1, line_index - 1)
+                    bottom_left = (char_index - 1, line_index + 1)
+                    bottom_right = (char_index + 1, line_index + 1)
+
+                    top_left_character = self.puzzle[top_left[1]][top_left[0]]
+                    top_right_character = self.puzzle[top_right[1]][top_right[0]]
+                    bottom_left_character = self.puzzle[bottom_left[1]][bottom_left[0]]
+                    bottom_right_character = self.puzzle[bottom_right[1]][
+                        bottom_right[0]
+                    ]
+
+                    if (
+                        (
+                            top_left_character == word[0]
+                            and bottom_right_character == word[2]
+                        )
+                        or (
+                            top_left_character == word[2]
+                            and bottom_right_character == word[0]
+                        )
+                    ) and (
+                        (
+                            top_right_character == word[0]
+                            and bottom_left_character == word[2]
+                        )
+                        or (
+                            top_right_character == word[2]
+                            and bottom_left_character == word[0]
+                        )
+                    ):
+                        found_count += 1
+
+        return found_count
+
 
 class InputParser:
     def parse_file(filename: str) -> list[str]:
@@ -84,6 +132,8 @@ class InputParser:
 
 if __name__ == "__main__":
     puzzle = InputParser.parse_file("./inputs/day04/first_input.txt")
-    wordSearch = WordSearch(puzzle)
-    match_count = wordSearch.search_for("XMAS")
+    word_search = WordSearch(puzzle)
+    match_count = word_search.search_for("XMAS")
     print(f"Found {match_count} instances of XMAS")
+    match_count = word_search.search_for_interlocked("MAS")
+    print(f"Found {match_count} instances of interlocked MAS")
