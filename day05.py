@@ -1,4 +1,5 @@
 import math
+from typing import Self
 from typing import Tuple
 
 
@@ -51,6 +52,10 @@ class Update:
 
         return True
 
+    def reorder_to_satisfy(self, ordering_rules: list[OrderingRule]) -> Self:
+        # TODO : Reorder the updated pages such that the applicable ordering rules are satisfied
+        return self
+
     def get_middle_page_number(self) -> int:
         updated_pages = self.get_updated_pages()
         return self.get_updated_pages()[math.trunc(len(updated_pages) / 2)]
@@ -70,10 +75,27 @@ class Instruction:
     def __should_be_printed(self, update: Update) -> bool:
         return update.should_be_printed(self.get_ordering_rules())
 
+    def __should_not_be_printed(self, update: Update) -> bool:
+        return not update.should_be_printed(self.get_ordering_rules())
+
+    def __reorder_to_satisfy(self, update: Update) -> Self:
+        return update.reorder_to_satisfy(self.get_ordering_rules())
+
     def sum_middle_page_of_printed_update(self) -> int:
         return sum(
             update.get_middle_page_number()
             for update in list(filter(self.__should_be_printed, self.get_updated()))
+        )
+
+    def sum_middle_page_of_reordered_printed_update(self) -> int:
+        return sum(
+            update.get_middle_page_number()
+            for update in list(
+                map(
+                    lambda update: self.__reorder_to_satisfy(update),
+                    list(filter(self.__should_not_be_printed, self.get_updated())),
+                )
+            )
         )
 
 
@@ -95,7 +117,7 @@ class InputParser:
         updated = []
 
         for line in input:
-            if line == "\n":
+            if line == "" or line == "\n":
                 am_parsing_ordering_rules = False
                 am_parsing_updates = True
                 continue
