@@ -1,4 +1,5 @@
 import math
+from functools import cmp_to_key
 from typing import Self
 from typing import Tuple
 
@@ -39,6 +40,23 @@ class Update:
     def __check_satisfied(self, ordering_rule: OrderingRule) -> bool:
         return ordering_rule.is_satisfied(self.get_updated_pages())
 
+    def __compare_by_rule_adherance(
+        x: int, y: int, ordering_rules: list[OrderingRule]
+    ) -> int:
+        two_part_update = Update([x, y])
+        applicable_rules = list(
+            filter(two_part_update.__check_applicable, ordering_rules)
+        )
+        if len(applicable_rules) == 0:
+            return 0
+
+        applicable_rule = applicable_rules[0]  # Assume only one rule will be applicable
+
+        if x == applicable_rule.get_first() and y == applicable_rule.get_next():
+            return -1
+
+        return 1
+
     def get_updated_pages(self) -> list[int]:
         return self.__updated_pages
 
@@ -53,8 +71,15 @@ class Update:
         return True
 
     def reorder_to_satisfy(self, ordering_rules: list[OrderingRule]) -> Self:
-        # TODO : Reorder the updated pages such that the applicable ordering rules are satisfied
-        return self
+        applicable_rules = list(filter(self.__check_applicable, ordering_rules))
+        pages = self.get_updated_pages()
+        sorted_pages = sorted(
+            pages,
+            key=cmp_to_key(
+                lambda x, y: Update.__compare_by_rule_adherance(x, y, applicable_rules)
+            ),
+        )
+        return Update(sorted_pages)
 
     def get_middle_page_number(self) -> int:
         updated_pages = self.get_updated_pages()
@@ -136,3 +161,9 @@ if __name__ == "__main__":
     instruction = InputParser.parse_file("./inputs/day05/first_input.txt")
     sum_of_middle_pages = instruction.sum_middle_page_of_printed_update()
     print(f"Calculated that the middle pages sum to {sum_of_middle_pages}")
+    sum_of_middle_pages_from_reordered = (
+        instruction.sum_middle_page_of_reordered_printed_update()
+    )
+    print(
+        f"Calculated that the middle pages sum for update which required reordering to {sum_of_middle_pages_from_reordered}"
+    )

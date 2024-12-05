@@ -86,6 +86,40 @@ def test_printable_update_is_detected():
     assert sut.should_be_printed(ordering_rules) == True
 
 
+def test_non_printable_update_can_be_resorted():
+    ordering_rules = [
+        day05.OrderingRule(47, 53),
+        day05.OrderingRule(97, 13),
+        day05.OrderingRule(97, 61),
+        day05.OrderingRule(97, 47),
+        day05.OrderingRule(75, 29),
+        day05.OrderingRule(61, 13),
+        day05.OrderingRule(75, 53),
+        day05.OrderingRule(29, 13),
+        day05.OrderingRule(97, 29),
+        day05.OrderingRule(53, 29),
+        day05.OrderingRule(61, 53),
+        day05.OrderingRule(97, 53),
+        day05.OrderingRule(61, 29),
+        day05.OrderingRule(47, 13),
+        day05.OrderingRule(75, 47),
+        day05.OrderingRule(97, 75),
+        day05.OrderingRule(47, 61),
+        day05.OrderingRule(75, 61),
+        day05.OrderingRule(47, 29),
+        day05.OrderingRule(75, 13),
+        day05.OrderingRule(53, 13),
+    ]
+    sut = day05.Update([75, 97, 47, 61, 53])
+
+    assert sut.should_be_printed(ordering_rules) == False
+
+    resorted = sut.reorder_to_satisfy(ordering_rules)
+
+    assert resorted.should_be_printed(ordering_rules) == True
+    assert resorted.get_updated_pages() == [97, 75, 47, 61, 53]
+
+
 def test_initial_example_has_a_total_of_143():
     input = [
         "47|53",
